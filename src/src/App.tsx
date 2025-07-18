@@ -1,13 +1,18 @@
 import React, { useMemo } from 'react';
-import { MantineReactTable, useMantineReactTable } from 'mantine-react-table';
+import { MantineReactTable, useMantineReactTable, type MRT_ColumnDef } from 'mantine-react-table';
 
-const data = [
+interface Person {
+  name: string;
+  age: number;
+}
+
+const data: Person[] = [
   { name: 'John', age: 30 },
   { name: 'Sara', age: 25 },
 ];
 
 function App() {
-  const columns = useMemo(
+  const columns = useMemo<MRT_ColumnDef<Person>[]>(
     () => [
       {
         accessorKey: 'name',
