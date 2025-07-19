@@ -183,6 +183,7 @@ function TableWithModal() {
         changelog={personChangelog}
         personPath={personPath}
         onBreadcrumbClick={openPersonModal}
+        onSave={updatedPerson => dispatch(updatePerson(updatedPerson))}
       />
     </>
   );
