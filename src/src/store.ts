@@ -1,23 +1,5 @@
 import { configureStore, createSlice, PayloadAction } from '@reduxjs/toolkit';
-
-interface Person {
-  id: string;
-  name: string;
-  age: number;
-  status: 'active' | 'inactive';
-  children?: Person[];
-}
-
-interface ChangeLogEntry {
-  id: string;
-  timestamp: string;
-  action: 'CREATE' | 'UPDATE' | 'DELETE';
-  personId: string;
-  personName: string;
-  beforeState?: Partial<Person>;
-  afterState?: Partial<Person>;
-  description: string;
-}
+import type { Person, ChangeLogEntry } from './types';
 
 interface PersonState {
   data: Person[];

@@ -1,25 +1,7 @@
 import React from 'react';
 import { Modal, Box, Text, Group, Badge, ScrollArea, Divider } from '@mantine/core';
 import { IconUser, IconActivity, IconClock } from '@tabler/icons-react';
-
-interface Person {
-  id: string;
-  name: string;
-  age: number;
-  status: 'active' | 'inactive';
-  children?: Person[];
-}
-
-interface ChangeLogEntry {
-  id: string;
-  timestamp: string;
-  action: 'CREATE' | 'UPDATE' | 'DELETE';
-  personId: string;
-  personName: string;
-  beforeState?: Partial<Person>;
-  afterState?: Partial<Person>;
-  description: string;
-}
+import type { Person, ChangeLogEntry } from './types';
 
 const statusLabels: Record<string, string> = {
   active: 'Active',

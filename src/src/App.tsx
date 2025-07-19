@@ -6,14 +6,7 @@ import { addPerson, updatePerson, deletePerson } from './store';
 import { Box, ActionIcon } from '@mantine/core';
 import { IconEdit, IconFileDatabase, IconSend, IconTrash } from '@tabler/icons-react';
 import PersonModal from './PersonModal';
-
-interface Person {
-  id: string;
-  name: string;
-  age: number;
-  status: 'active' | 'inactive';
-  children?: Person[];
-}
+import type { Person, ChangeLogEntry } from './types';
 
 const statusList = [
   { label: 'Active', value: 'active' },
