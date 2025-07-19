@@ -4,19 +4,15 @@ import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from './store';
 import { addPerson, updatePerson, deletePerson } from './store';
 import { Box, ActionIcon } from '@mantine/core';
-import { IconEdit, IconFileDatabase, IconSend, IconTrash } from '@tabler/icons-react';
+import { IconEdit, IconFileDatabase, IconTrash } from '@tabler/icons-react';
 import PersonModal from './PersonModal';
+import StatusBadge from './StatusBadge';
 import type { Person, ChangeLogEntry } from './types';
 
 const statusList = [
   { label: 'Active', value: 'active' },
   { label: 'Inactive', value: 'inactive' }
 ];
-
-const statusLabels: Record<string, string> = {
-  active: 'Active',
-  inactive: 'Inactive',
-};
 
 function App() {
   const { data, loading, changelog } = useSelector((state: RootState) => state.person);
@@ -80,7 +76,9 @@ function App() {
           data: statusList,
         },
         filterFn: 'arrIncludesSome',
-        Cell: ({ cell }: { cell: any }) => statusLabels[cell.getValue()] || cell.getValue(),
+        Cell: ({ cell }: { cell: any }) => (
+          <StatusBadge status={cell.getValue()} />
+        ),
       },
     ],
     []

@@ -1,12 +1,8 @@
 import React from 'react';
-import { Modal, Box, Text, Group, Badge, ScrollArea, Divider } from '@mantine/core';
+import { Modal, Box, Text, Group, ScrollArea, Divider, Badge } from '@mantine/core';
 import { IconUser, IconActivity, IconClock } from '@tabler/icons-react';
+import StatusBadge from './StatusBadge';
 import type { Person, ChangeLogEntry } from './types';
-
-const statusLabels: Record<string, string> = {
-  active: 'Active',
-  inactive: 'Inactive',
-};
 
 interface PersonModalProps {
   opened: boolean;
@@ -33,9 +29,7 @@ const PersonModal: React.FC<PersonModalProps> = ({ opened, onClose, person, chan
           <Group>
             <Text><strong>Name:</strong> {person.name}</Text>
             <Text><strong>Age:</strong> {person.age}</Text>
-            <Badge color={person.status === 'active' ? 'green' : 'red'}>
-              {statusLabels[person.status]}
-            </Badge>
+            <StatusBadge status={person.status} />
           </Group>
           {person.children && person.children.length > 0 && (
             <Text mt="sm"><strong>Children:</strong> {person.children.length}</Text>
