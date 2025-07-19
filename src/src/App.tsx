@@ -3,6 +3,8 @@ import { MantineReactTable, useMantineReactTable, type MRT_ColumnDef } from 'man
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from './store';
 import { addPerson, updatePerson, deletePerson } from './store';
+import { Box, ActionIcon } from '@mantine/core';
+import { IconEdit, IconSend, IconTrash } from '@tabler/icons-react';
 
 interface Person {
   id: string;
@@ -68,6 +70,21 @@ function App() {
     enableFilters: true,
     enableEditing: true,
     enableExpanding: true,
+    enableRowActions: true,
+    renderRowActions: ({ row }) => (
+      <Box sx={{ display: 'flex', flexWrap: 'nowrap', gap: '8px' }}>
+        <ActionIcon
+          onClick={() => { table.setEditingRow(row); }}
+        >
+          <IconEdit />
+        </ActionIcon>
+        <ActionIcon
+          onClick={() => dispatch(deletePerson(row.original.id))}
+        >
+          <IconTrash />
+        </ActionIcon>
+      </Box>
+    ),
     editDisplayMode: 'row',
     mantineEditRowModalProps: {
       closeOnClickOutside: false,
