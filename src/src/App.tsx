@@ -31,6 +31,23 @@ function App() {
     return null;
   };
 
+  // Helper function to find the path/ancestors of a person
+  const findPersonPath = (persons: Person[], targetId: string, currentPath: Person[] = []): Person[] | null => {
+    for (const person of persons) {
+      const newPath = [...currentPath, person];
+      
+      if (person.id === targetId) {
+        return newPath;
+      }
+      
+      if (person.children) {
+        const found = findPersonPath(person.children, targetId, newPath);
+        if (found) return found;
+      }
+    }
+    return null;
+  };
+
   // Helper function to get changelog entries for a specific person
   const getPersonChangelog = (personId: string) => {
     return changelog.filter(entry => entry.personId === personId);
@@ -45,6 +62,7 @@ function App() {
   };
 
   const selectedPerson = selectedPersonId ? findPersonById(data, selectedPersonId) : null;
+  const personPath = selectedPersonId ? findPersonPath(data, selectedPersonId) : null;
   const personChangelog = selectedPersonId ? getPersonChangelog(selectedPersonId) : [];
 
   const columns = useMemo<MRT_ColumnDef<Person>[]>(
@@ -152,6 +170,7 @@ function App() {
         onClose={closePersonModal}
         person={selectedPerson}
         changelog={personChangelog}
+        personPath={personPath}
       />
     </>
   );

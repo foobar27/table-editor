@@ -1,6 +1,6 @@
 import React from 'react';
-import { Modal, Box, Text, Group, ScrollArea, Divider, Badge } from '@mantine/core';
-import { IconUser, IconActivity, IconClock } from '@tabler/icons-react';
+import { Modal, Box, Text, Group, ScrollArea, Divider, Badge, Breadcrumbs, Anchor } from '@mantine/core';
+import { IconUser, IconActivity, IconClock, IconChevronRight } from '@tabler/icons-react';
 import StatusBadge from './StatusBadge';
 import type { Person, ChangeLogEntry } from './types';
 
@@ -9,9 +9,10 @@ interface PersonModalProps {
   onClose: () => void;
   person: Person | null;
   changelog: ChangeLogEntry[];
+  personPath: Person[] | null;
 }
 
-const PersonModal: React.FC<PersonModalProps> = ({ opened, onClose, person, changelog }) => (
+const PersonModal: React.FC<PersonModalProps> = ({ opened, onClose, person, changelog, personPath }) => (
   <Modal
     opened={opened}
     onClose={onClose}
@@ -20,6 +21,24 @@ const PersonModal: React.FC<PersonModalProps> = ({ opened, onClose, person, chan
   >
     {person && (
       <Box>
+        {/* Breadcrumbs */}
+        {personPath && personPath.length > 1 && (
+          <Box mb="md">
+            <Breadcrumbs separator={<IconChevronRight size={16} />}>
+              {personPath.map((ancestor, index) => (
+                <Anchor
+                  key={ancestor.id}
+                  size="sm"
+                  color={index === personPath.length - 1 ? 'blue' : 'dimmed'}
+                  style={{ fontWeight: index === personPath.length - 1 ? 'bold' : 'normal' }}
+                >
+                  {ancestor.name}
+                </Anchor>
+              ))}
+            </Breadcrumbs>
+          </Box>
+        )}
+
         {/* Person Details */}
         <Box mb="md">
           <Text size="lg" weight={700} mb="sm">
@@ -49,14 +68,11 @@ const PersonModal: React.FC<PersonModalProps> = ({ opened, onClose, person, chan
               changelog.map((entry) => (
                 <Box key={entry.id} mb="sm" p="sm" sx={{ border: '1px solid #e0e0e0', borderRadius: 4 }}>
                   <Group position="apart" mb="xs">
-                    <Badge 
-                      color={
-                        entry.action === 'CREATE' ? 'green' : 
-                        entry.action === 'UPDATE' ? 'blue' : 'red'
-                      }
-                    >
-                      {entry.action}
-                    </Badge>
+                    {entry.action === 'CREATE' || entry.action === 'DELETE' ? (
+                      <StatusBadge status={entry.action === 'CREATE' ? 'active' : 'inactive'} />
+                    ) : (
+                      <Badge color="gray">{entry.action}</Badge>
+                    )}
                     <Text size="xs" color="dimmed">
                       <IconClock size={12} style={{ marginRight: 4 }} />
                       {new Date(entry.timestamp).toLocaleString()}
