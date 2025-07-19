@@ -1,9 +1,11 @@
 import React, { useMemo } from 'react';
 import { MantineReactTable, useMantineReactTable, type MRT_ColumnDef } from 'mantine-react-table';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from './store';
+import { addPerson, updatePerson, deletePerson } from './store';
 
 interface Person {
+  id: string;
   name: string;
   age: number;
   status: 'active' | 'inactive';
@@ -21,6 +23,7 @@ const statusLabels: Record<string, string> = {
 
 function App() {
   const { data, loading } = useSelector((state: RootState) => state.person);
+  const dispatch = useDispatch();
 
   const columns = useMemo<MRT_ColumnDef<Person>[]>(
     () => [
@@ -54,7 +57,34 @@ function App() {
     state: { isLoading: loading },
   });
 
-  return <MantineReactTable table={table} />;
+  const handleAddPerson = () => {
+    dispatch(addPerson({
+      name: 'New Person',
+      age: 25,
+      status: 'active'
+    }));
+  };
+
+  const handleUpdateFirstPerson = () => {
+    if (data.length > 0) {
+      const firstPerson = data[0];
+      dispatch(updatePerson({
+        ...firstPerson,
+        name: 'Updated ' + firstPerson.name,
+        age: firstPerson.age + 1
+      }));
+    }
+  };
+
+  const handleDeleteFirstPerson = () => {
+    if (data.length > 0) {
+      dispatch(deletePerson(data[0].id));
+    }
+  };
+
+  return (
+    <MantineReactTable table={table} />
+  );
 }
 
 export default App;
