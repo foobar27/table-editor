@@ -10,9 +10,10 @@ interface PersonModalProps {
   person: Person | null;
   changelog: ChangeLogEntry[];
   personPath: Person[] | null;
+  onBreadcrumbClick?: (personId: string) => void;
 }
 
-const PersonModal: React.FC<PersonModalProps> = ({ opened, onClose, person, changelog, personPath }) => (
+const PersonModal: React.FC<PersonModalProps> = ({ opened, onClose, person, changelog, personPath, onBreadcrumbClick }) => (
   <Modal
     opened={opened}
     onClose={onClose}
@@ -30,7 +31,9 @@ const PersonModal: React.FC<PersonModalProps> = ({ opened, onClose, person, chan
                   key={ancestor.id}
                   size="sm"
                   color={index === personPath.length - 1 ? 'blue' : 'dimmed'}
-                  style={{ fontWeight: index === personPath.length - 1 ? 'bold' : 'normal' }}
+                  style={{ fontWeight: index === personPath.length - 1 ? 'bold' : 'normal', cursor: index === personPath.length - 1 ? 'default' : 'pointer' }}
+                  onClick={index === personPath.length - 1 ? undefined : () => onBreadcrumbClick && onBreadcrumbClick(ancestor.id)}
+                  underline={index === personPath.length - 1 ? false : true}
                 >
                   {ancestor.name}
                 </Anchor>

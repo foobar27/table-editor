@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { MantineReactTable, useMantineReactTable, type MRT_ColumnDef } from 'mantine-react-table';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from './store';
@@ -8,15 +8,19 @@ import { IconEdit, IconFileDatabase, IconTrash } from '@tabler/icons-react';
 import PersonModal from './PersonModal';
 import StatusBadge from './StatusBadge';
 import type { Person, ChangeLogEntry } from './types';
+import { useNavigate, useParams, useLocation, Routes, Route, useMatch } from 'react-router-dom';
 
 const statusList = [
   { label: 'Active', value: 'active' },
   { label: 'Inactive', value: 'inactive' }
 ];
 
-function App() {
+function TableWithModal() {
   const { data, loading, changelog } = useSelector((state: RootState) => state.person);
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const params = useParams();
+  const location = useLocation();
   const [selectedPersonId, setSelectedPersonId] = useState<string | null>(null);
 
   // Helper function to find a person by ID recursively
@@ -35,11 +39,9 @@ function App() {
   const findPersonPath = (persons: Person[], targetId: string, currentPath: Person[] = []): Person[] | null => {
     for (const person of persons) {
       const newPath = [...currentPath, person];
-      
       if (person.id === targetId) {
         return newPath;
       }
-      
       if (person.children) {
         const found = findPersonPath(person.children, targetId, newPath);
         if (found) return found;
@@ -53,12 +55,21 @@ function App() {
     return changelog.filter(entry => entry.personId === personId);
   };
 
+  // Sync modal open/close with router
+  useEffect(() => {
+    if (params.id) {
+      setSelectedPersonId(params.id);
+    } else {
+      setSelectedPersonId(null);
+    }
+  }, [params.id]);
+
   const openPersonModal = (personId: string) => {
-    setSelectedPersonId(personId);
+    navigate(`/person/${personId}${location.search}`);
   };
 
   const closePersonModal = () => {
-    setSelectedPersonId(null);
+    navigate('/');
   };
 
   const selectedPerson = selectedPersonId ? findPersonById(data, selectedPersonId) : null;
@@ -171,9 +182,17 @@ function App() {
         person={selectedPerson}
         changelog={personChangelog}
         personPath={personPath}
+        onBreadcrumbClick={openPersonModal}
       />
     </>
   );
 }
 
-export default App;
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/" element={<TableWithModal />} />
+      <Route path="/person/:id" element={<TableWithModal />} />
+    </Routes>
+  );
+}
