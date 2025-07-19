@@ -49,6 +49,7 @@ function App() {
         mantineFilterMultiSelectProps: {
           data: statusList,
         },
+        editVariant: 'select',
         mantineEditSelectProps: {
           data: statusList,
         },
