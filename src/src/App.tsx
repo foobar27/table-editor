@@ -30,16 +30,26 @@ function App() {
       {
         accessorKey: 'name',
         header: 'Name',
+        mantineEditTextInputProps: {
+          required: true,
+        },
       },
       {
         accessorKey: 'age',
         header: 'Age',
+        mantineEditTextInputProps: {
+          type: 'number',
+          required: true,
+        },
       },
       {
         accessorKey: 'status',
         header: 'Status',
         filterVariant: 'multi-select',
         mantineFilterMultiSelectProps: {
+          data: statusList,
+        },
+        mantineEditSelectProps: {
           data: statusList,
         },
         filterFn: 'arrIncludesSome',
@@ -54,37 +64,41 @@ function App() {
     data,
     enableColumnFilterModes: true,
     enableFilters: true,
+    enableEditing: true,
+    editDisplayMode: 'row',
+    mantineEditRowModalProps: {
+      closeOnClickOutside: false,
+      withCloseButton: true,
+    },
+    onEditingRowSave: ({ values, row, exitEditingMode }) => {
+      // Update the person in Redux store
+      dispatch(updatePerson({
+        id: row.original.id,
+        name: values.name,
+        age: values.age,
+        status: values.status,
+      }));
+      exitEditingMode();
+    },
+    onCreatingRowSave: ({ values, exitCreatingMode }) => {
+      // Add new person to Redux store
+      dispatch(addPerson({
+        name: values.name,
+        age: values.age,
+        status: values.status,
+      }));
+      exitCreatingMode();
+    },
+    onEditingRowCancel: () => {
+      // Handle cancel editing if needed
+    },
+    onCreatingRowCancel: () => {
+      // Handle cancel creating if needed
+    },
     state: { isLoading: loading },
   });
 
-  const handleAddPerson = () => {
-    dispatch(addPerson({
-      name: 'New Person',
-      age: 25,
-      status: 'active'
-    }));
-  };
-
-  const handleUpdateFirstPerson = () => {
-    if (data.length > 0) {
-      const firstPerson = data[0];
-      dispatch(updatePerson({
-        ...firstPerson,
-        name: 'Updated ' + firstPerson.name,
-        age: firstPerson.age + 1
-      }));
-    }
-  };
-
-  const handleDeleteFirstPerson = () => {
-    if (data.length > 0) {
-      dispatch(deletePerson(data[0].id));
-    }
-  };
-
-  return (
-    <MantineReactTable table={table} />
-  );
+  return <MantineReactTable table={table} />;
 }
 
 export default App;
