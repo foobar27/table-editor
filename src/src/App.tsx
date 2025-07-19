@@ -3,8 +3,9 @@ import { MantineReactTable, useMantineReactTable, type MRT_ColumnDef } from 'man
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from './store';
 import { addPerson, updatePerson, deletePerson } from './store';
-import { Box, ActionIcon, Modal, Text, Group, Badge, ScrollArea, Divider } from '@mantine/core';
-import { IconEdit, IconFileDatabase, IconSend, IconTrash, IconClock, IconUser, IconActivity } from '@tabler/icons-react';
+import { Box, ActionIcon } from '@mantine/core';
+import { IconEdit, IconFileDatabase, IconSend, IconTrash } from '@tabler/icons-react';
+import PersonModal from './PersonModal';
 
 interface Person {
   id: string;
@@ -155,80 +156,12 @@ function App() {
   return (
     <>
       <MantineReactTable table={table} />
-      
-      <Modal
+      <PersonModal
         opened={!!selectedPersonId}
         onClose={closePersonModal}
-        title="Person Details & Changelog"
-        size="lg"
-      >
-        {selectedPerson && (
-          <Box>
-            {/* Person Details */}
-            <Box mb="md">
-              <Text size="lg" weight={700} mb="sm">
-                <IconUser size={20} style={{ marginRight: 8 }} />
-                Person Information
-              </Text>
-              <Group>
-                <Text><strong>Name:</strong> {selectedPerson.name}</Text>
-                <Text><strong>Age:</strong> {selectedPerson.age}</Text>
-                <Badge color={selectedPerson.status === 'active' ? 'green' : 'red'}>
-                  {statusLabels[selectedPerson.status]}
-                </Badge>
-              </Group>
-              {selectedPerson.children && selectedPerson.children.length > 0 && (
-                <Text mt="sm"><strong>Children:</strong> {selectedPerson.children.length}</Text>
-              )}
-            </Box>
-
-            <Divider mb="md" />
-
-            {/* Changelog */}
-            <Box>
-              <Text size="lg" weight={700} mb="sm">
-                <IconActivity size={20} style={{ marginRight: 8 }} />
-                Change History
-              </Text>
-              <ScrollArea h={300}>
-                {personChangelog.length > 0 ? (
-                  personChangelog.map((entry) => (
-                    <Box key={entry.id} mb="sm" p="sm" sx={{ border: '1px solid #e0e0e0', borderRadius: 4 }}>
-                      <Group position="apart" mb="xs">
-                        <Badge 
-                          color={
-                            entry.action === 'CREATE' ? 'green' : 
-                            entry.action === 'UPDATE' ? 'blue' : 'red'
-                          }
-                        >
-                          {entry.action}
-                        </Badge>
-                        <Text size="xs" color="dimmed">
-                          <IconClock size={12} style={{ marginRight: 4 }} />
-                          {new Date(entry.timestamp).toLocaleString()}
-                        </Text>
-                      </Group>
-                      <Text size="sm">{entry.description}</Text>
-                      {entry.beforeState && (
-                        <Text size="xs" color="dimmed" mt="xs">
-                          <strong>Before:</strong> {JSON.stringify(entry.beforeState, null, 2)}
-                        </Text>
-                      )}
-                      {entry.afterState && (
-                        <Text size="xs" color="dimmed" mt="xs">
-                          <strong>After:</strong> {JSON.stringify(entry.afterState, null, 2)}
-                        </Text>
-                      )}
-                    </Box>
-                  ))
-                ) : (
-                  <Text color="dimmed" align="center">No changes recorded for this person.</Text>
-                )}
-              </ScrollArea>
-            </Box>
-          </Box>
-        )}
-      </Modal>
+        person={selectedPerson}
+        changelog={personChangelog}
+      />
     </>
   );
 }
