@@ -8,9 +8,21 @@ interface Person {
   children?: Person[];
 }
 
+interface ChangeLogEntry {
+  id: string;
+  timestamp: string;
+  action: 'CREATE' | 'UPDATE' | 'DELETE';
+  personId: string;
+  personName: string;
+  beforeState?: Partial<Person>;
+  afterState?: Partial<Person>;
+  description: string;
+}
+
 interface PersonState {
   data: Person[];
   loading: boolean;
+  changelog: ChangeLogEntry[];
 }
 
 const initialState: PersonState = {
@@ -36,6 +48,52 @@ const initialState: PersonState = {
     },
   ],
   loading: false,
+  changelog: [
+    {
+      id: 'initial',
+      timestamp: new Date().toISOString(),
+      action: 'CREATE',
+      personId: 'initial',
+      personName: 'Initial Data',
+      afterState: { name: 'Initial Data Load' },
+      description: 'Initial data loaded into the system'
+    }
+  ],
+};
+
+// Helper function to create changelog entry
+const createChangelogEntry = (
+  action: 'CREATE' | 'UPDATE' | 'DELETE',
+  personId: string,
+  personName: string,
+  beforeState?: Partial<Person>,
+  afterState?: Partial<Person>,
+  description?: string
+): ChangeLogEntry => {
+  return {
+    id: Date.now().toString(),
+    timestamp: new Date().toISOString(),
+    action,
+    personId,
+    personName,
+    beforeState,
+    afterState,
+    description: description || `${action} operation on ${personName}`
+  };
+};
+
+// Helper function to recursively find a person
+const findPersonRecursive = (persons: Person[], targetId: string): Person | null => {
+  for (const person of persons) {
+    if (person.id === targetId) {
+      return person;
+    }
+    if (person.children) {
+      const found = findPersonRecursive(person.children, targetId);
+      if (found) return found;
+    }
+  }
+  return null;
 };
 
 // Helper function to recursively find and update a person
@@ -75,6 +133,14 @@ const personSlice = createSlice({
   reducers: {
     setData: (state, action: PayloadAction<Person[]>) => {
       state.data = action.payload;
+      state.changelog.push(createChangelogEntry(
+        'UPDATE',
+        'all',
+        'All Data',
+        undefined,
+        { name: 'Bulk Data Update' },
+        'Data replaced via setData action'
+      ));
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
@@ -82,20 +148,58 @@ const personSlice = createSlice({
     addPerson: (state, action: PayloadAction<Omit<Person, 'id'>>) => {
       const newPerson: Person = {
         ...action.payload,
-        id: Date.now().toString(), // Simple ID generation
+        id: Date.now().toString(),
       };
       state.data.push(newPerson);
+      
+      state.changelog.push(createChangelogEntry(
+        'CREATE',
+        newPerson.id,
+        newPerson.name,
+        undefined,
+        newPerson,
+        `Added new person: ${newPerson.name}`
+      ));
     },
     updatePerson: (state, action: PayloadAction<Person>) => {
+      const existingPerson = findPersonRecursive(state.data, action.payload.id);
+      const beforeState = existingPerson ? { ...existingPerson } : undefined;
+      
       state.data = updatePersonRecursive(state.data, action.payload.id, action.payload);
+      
+      state.changelog.push(createChangelogEntry(
+        'UPDATE',
+        action.payload.id,
+        action.payload.name,
+        beforeState,
+        action.payload,
+        `Updated person: ${action.payload.name}`
+      ));
     },
     deletePerson: (state, action: PayloadAction<string>) => {
+      const existingPerson = findPersonRecursive(state.data, action.payload);
+      const beforeState = existingPerson ? { ...existingPerson } : undefined;
+      
       state.data = deletePersonRecursive(state.data, action.payload);
+      
+      if (existingPerson) {
+        state.changelog.push(createChangelogEntry(
+          'DELETE',
+          action.payload,
+          existingPerson.name,
+          beforeState,
+          undefined,
+          `Deleted person: ${existingPerson.name}`
+        ));
+      }
+    },
+    clearChangelog: (state) => {
+      state.changelog = [];
     },
   },
 });
 
-export const { setData, setLoading, addPerson, updatePerson, deletePerson } = personSlice.actions;
+export const { setData, setLoading, addPerson, updatePerson, deletePerson, clearChangelog } = personSlice.actions;
 
 const store = configureStore({
   reducer: {
