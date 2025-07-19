@@ -1,16 +1,13 @@
 import React, { useMemo } from 'react';
-import { MantineReactTable, useMantineReactTable, type MRT_ColumnDef, type MRT_FilterFn } from 'mantine-react-table';
+import { MantineReactTable, useMantineReactTable, type MRT_ColumnDef } from 'mantine-react-table';
+import { useSelector } from 'react-redux';
+import { RootState } from './store';
 
 interface Person {
   name: string;
   age: number;
   status: 'active' | 'inactive';
 }
-
-const data: Person[] = [
-  { name: 'John', age: 30, status: 'active' },
-  { name: 'Sara', age: 25, status: 'inactive' },
-];
 
 const statusList = [
   { label: 'Active', value: 'active' },
@@ -22,14 +19,9 @@ const statusLabels: Record<string, string> = {
   inactive: 'Inactive',
 };
 
-const statusFilterFn: MRT_FilterFn<Person> = (row, id, filterValue: string[]) => {
-  if (filterValue.length === 0) {
-    return true;
-  }
-  return filterValue.includes(row.getValue("status"));
-};
-
 function App() {
+  const { data, loading } = useSelector((state: RootState) => state.person);
+
   const columns = useMemo<MRT_ColumnDef<Person>[]>(
     () => [
       {
@@ -47,7 +39,7 @@ function App() {
         mantineFilterMultiSelectProps: {
           data: statusList,
         },
-        filterFn: statusFilterFn,
+        filterFn: 'arrIncludesSome',
         Cell: ({ cell }: { cell: any }) => statusLabels[cell.getValue()] || cell.getValue(),
       },
     ],
@@ -57,7 +49,9 @@ function App() {
   const table = useMantineReactTable({
     columns,
     data,
+    enableColumnFilterModes: true,
     enableFilters: true,
+    state: { isLoading: loading },
   });
 
   return <MantineReactTable table={table} />;
