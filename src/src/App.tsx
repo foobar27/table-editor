@@ -9,6 +9,7 @@ interface Person {
   name: string;
   age: number;
   status: 'active' | 'inactive';
+  children?: Person[];
 }
 
 const statusList = [
@@ -66,11 +67,13 @@ function App() {
     enableColumnFilterModes: true,
     enableFilters: true,
     enableEditing: true,
+    enableExpanding: true,
     editDisplayMode: 'row',
     mantineEditRowModalProps: {
       closeOnClickOutside: false,
       withCloseButton: true,
     },
+    getSubRows: (row) => row.children,
     onEditingRowSave: ({ values, row, exitEditingMode }) => {
       // Update the person in Redux store
       dispatch(updatePerson({
@@ -78,6 +81,7 @@ function App() {
         name: values.name,
         age: values.age,
         status: values.status,
+        children: row.original.children,
       }));
       exitEditingMode();
     },

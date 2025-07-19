@@ -5,6 +5,7 @@ interface Person {
   name: string;
   age: number;
   status: 'active' | 'inactive';
+  children?: Person[];
 }
 
 interface PersonState {
@@ -14,10 +15,58 @@ interface PersonState {
 
 const initialState: PersonState = {
   data: [
-    { id: '1', name: 'John', age: 30, status: 'active' },
-    { id: '2', name: 'Sara', age: 25, status: 'inactive' },
+    { 
+      id: '1', 
+      name: 'John', 
+      age: 30, 
+      status: 'active',
+      children: [
+        { id: '1-1', name: 'Alice', age: 25, status: 'active' },
+        { id: '1-2', name: 'Bob', age: 28, status: 'inactive' }
+      ]
+    },
+    { 
+      id: '2', 
+      name: 'Sara', 
+      age: 25, 
+      status: 'inactive',
+      children: [
+        { id: '2-1', name: 'Charlie', age: 22, status: 'active' }
+      ]
+    },
   ],
   loading: false,
+};
+
+// Helper function to recursively find and update a person
+const updatePersonRecursive = (persons: Person[], targetId: string, updatedPerson: Person): Person[] => {
+  return persons.map(person => {
+    if (person.id === targetId) {
+      return updatedPerson;
+    }
+    if (person.children) {
+      return {
+        ...person,
+        children: updatePersonRecursive(person.children, targetId, updatedPerson)
+      };
+    }
+    return person;
+  });
+};
+
+// Helper function to recursively find and delete a person
+const deletePersonRecursive = (persons: Person[], targetId: string): Person[] => {
+  return persons
+    .filter(person => person.id !== targetId)
+    .map(person => {
+      if (person.children) {
+        return {
+          ...person,
+          children: deletePersonRecursive(person.children, targetId)
+        };
+      }
+      return person;
+    });
 };
 
 const personSlice = createSlice({
@@ -38,13 +87,10 @@ const personSlice = createSlice({
       state.data.push(newPerson);
     },
     updatePerson: (state, action: PayloadAction<Person>) => {
-      const index = state.data.findIndex(person => person.id === action.payload.id);
-      if (index !== -1) {
-        state.data[index] = action.payload;
-      }
+      state.data = updatePersonRecursive(state.data, action.payload.id, action.payload);
     },
     deletePerson: (state, action: PayloadAction<string>) => {
-      state.data = state.data.filter(person => person.id !== action.payload);
+      state.data = deletePersonRecursive(state.data, action.payload);
     },
   },
 });
