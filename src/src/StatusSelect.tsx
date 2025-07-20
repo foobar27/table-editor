@@ -11,10 +11,15 @@ interface StatusSelectProps {
 
 const statusList = [
   { label: 'Active', value: 'active' },
-  { label: 'Inactive', value: 'inactive' }
+  { label: 'Inactive', value: 'inactive' },
 ];
 
-const StatusSelect: React.FC<StatusSelectProps> = ({ value, onChange, label = 'Status', required = false }) => {
+const StatusSelect: React.FC<StatusSelectProps> = ({
+  value,
+  onChange,
+  label = 'Status',
+  required = false,
+}) => {
   return (
     <Select
       label={label}
@@ -39,11 +44,7 @@ const StatusSelect: React.FC<StatusSelectProps> = ({ value, onChange, label = 'S
       })}
       itemComponent={({ label, value, ...others }) => (
         <div {...others}>
-          <Badge
-            color={value === 'active' ? 'green' : 'red'}
-            variant="filled"
-            size="sm"
-          >
+          <Badge color={value === 'active' ? 'green' : 'red'} variant="filled" size="sm">
             {label}
           </Badge>
         </div>
@@ -52,4 +53,4 @@ const StatusSelect: React.FC<StatusSelectProps> = ({ value, onChange, label = 'S
   );
 };
 
-export default StatusSelect; 
+export default StatusSelect;

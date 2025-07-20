@@ -15,4 +15,4 @@ export interface ChangeLogEntry {
   beforeState?: Partial<Person>;
   afterState?: Partial<Person>;
   description: string;
-} 
+}

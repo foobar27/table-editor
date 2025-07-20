@@ -22,18 +22,20 @@ A React-based table editor with hierarchical data support, built with Mantine Re
 
 ## Prerequisites
 
-- Node.js 16+ 
+- Node.js 16+
 - npm or yarn
 
 ## Installation
 
 1. **Clone the repository**:
+
    ```bash
    git clone <repository-url>
    cd table-editor
    ```
 
 2. **Install dependencies**:
+
    ```bash
    npm install
    ```
@@ -125,10 +127,12 @@ interface Person {
 ## Available Scripts
 
 ### Root Directory
+
 - `npm install` - Install root dependencies
 - `npm install --prefix src` - Install React app dependencies
 
 ### React App Directory (src/)
+
 - `npm start` - Start development server
 - `npm run build` - Create production build
 - `npm test` - Run tests
@@ -191,7 +195,7 @@ This project is licensed under the MIT License.
 ## Support
 
 For issues and questions:
+
 - Check the [Mantine React Table documentation](https://www.mantine-react-table.com/)
 - Review the [Redux Toolkit documentation](https://redux-toolkit.js.org/)
 - Open an issue in this repository
-

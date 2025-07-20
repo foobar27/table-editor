@@ -16,11 +16,7 @@ const StatusBadge: React.FC<StatusBadgeProps> = ({ status }) => {
   else if (status === 'inactive') color = 'red';
   else color = 'gray';
 
-  return (
-    <Badge color={color}>
-      {statusLabels[status] || status}
-    </Badge>
-  );
+  return <Badge color={color}>{statusLabels[status] || status}</Badge>;
 };
 
-export default StatusBadge; 
+export default StatusBadge;

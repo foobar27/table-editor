@@ -9,24 +9,22 @@ interface PersonState {
 
 const initialState: PersonState = {
   data: [
-    { 
-      id: '1', 
-      name: 'John', 
-      age: 30, 
+    {
+      id: '1',
+      name: 'John',
+      age: 30,
       status: 'active',
       children: [
         { id: '1-1', name: 'Alice', age: 25, status: 'active' },
-        { id: '1-2', name: 'Bob', age: 28, status: 'inactive' }
-      ]
+        { id: '1-2', name: 'Bob', age: 28, status: 'inactive' },
+      ],
     },
-    { 
-      id: '2', 
-      name: 'Sara', 
-      age: 25, 
+    {
+      id: '2',
+      name: 'Sara',
+      age: 25,
       status: 'inactive',
-      children: [
-        { id: '2-1', name: 'Charlie', age: 22, status: 'active' }
-      ]
+      children: [{ id: '2-1', name: 'Charlie', age: 22, status: 'active' }],
     },
   ],
   loading: false,
@@ -38,8 +36,8 @@ const initialState: PersonState = {
       personId: 'initial',
       personName: 'Initial Data',
       afterState: { name: 'Initial Data Load' },
-      description: 'Initial data loaded into the system'
-    }
+      description: 'Initial data loaded into the system',
+    },
   ],
 };
 
@@ -50,7 +48,7 @@ const createChangelogEntry = (
   personName: string,
   beforeState?: Partial<Person>,
   afterState?: Partial<Person>,
-  description?: string
+  description?: string,
 ): ChangeLogEntry => {
   return {
     id: Date.now().toString(),
@@ -60,7 +58,7 @@ const createChangelogEntry = (
     personName,
     beforeState,
     afterState,
-    description: description || `${action} operation on ${personName}`
+    description: description || `${action} operation on ${personName}`,
   };
 };
 
@@ -79,15 +77,19 @@ const findPersonRecursive = (persons: Person[], targetId: string): Person | null
 };
 
 // Helper function to recursively find and update a person
-const updatePersonRecursive = (persons: Person[], targetId: string, updatedPerson: Person): Person[] => {
-  return persons.map(person => {
+const updatePersonRecursive = (
+  persons: Person[],
+  targetId: string,
+  updatedPerson: Person,
+): Person[] => {
+  return persons.map((person) => {
     if (person.id === targetId) {
       return updatedPerson;
     }
     if (person.children) {
       return {
         ...person,
-        children: updatePersonRecursive(person.children, targetId, updatedPerson)
+        children: updatePersonRecursive(person.children, targetId, updatedPerson),
       };
     }
     return person;
@@ -97,12 +99,12 @@ const updatePersonRecursive = (persons: Person[], targetId: string, updatedPerso
 // Helper function to recursively find and delete a person
 const deletePersonRecursive = (persons: Person[], targetId: string): Person[] => {
   return persons
-    .filter(person => person.id !== targetId)
-    .map(person => {
+    .filter((person) => person.id !== targetId)
+    .map((person) => {
       if (person.children) {
         return {
           ...person,
-          children: deletePersonRecursive(person.children, targetId)
+          children: deletePersonRecursive(person.children, targetId),
         };
       }
       return person;
@@ -115,14 +117,16 @@ const personSlice = createSlice({
   reducers: {
     setData: (state, action: PayloadAction<Person[]>) => {
       state.data = action.payload;
-      state.changelog.push(createChangelogEntry(
-        'UPDATE',
-        'all',
-        'All Data',
-        undefined,
-        { name: 'Bulk Data Update' },
-        'Data replaced via setData action'
-      ));
+      state.changelog.push(
+        createChangelogEntry(
+          'UPDATE',
+          'all',
+          'All Data',
+          undefined,
+          { name: 'Bulk Data Update' },
+          'Data replaced via setData action',
+        ),
+      );
     },
     setLoading: (state, action: PayloadAction<boolean>) => {
       state.loading = action.payload;
@@ -133,46 +137,52 @@ const personSlice = createSlice({
         id: Date.now().toString(),
       };
       state.data.push(newPerson);
-      
-      state.changelog.push(createChangelogEntry(
-        'CREATE',
-        newPerson.id,
-        newPerson.name,
-        undefined,
-        newPerson,
-        `Added new person: ${newPerson.name}`
-      ));
+
+      state.changelog.push(
+        createChangelogEntry(
+          'CREATE',
+          newPerson.id,
+          newPerson.name,
+          undefined,
+          newPerson,
+          `Added new person: ${newPerson.name}`,
+        ),
+      );
     },
     updatePerson: (state, action: PayloadAction<Person>) => {
       const existingPerson = findPersonRecursive(state.data, action.payload.id);
       const beforeState = existingPerson ? { ...existingPerson } : undefined;
-      
+
       state.data = updatePersonRecursive(state.data, action.payload.id, action.payload);
-      
-      state.changelog.push(createChangelogEntry(
-        'UPDATE',
-        action.payload.id,
-        action.payload.name,
-        beforeState,
-        action.payload,
-        `Updated person: ${action.payload.name}`
-      ));
+
+      state.changelog.push(
+        createChangelogEntry(
+          'UPDATE',
+          action.payload.id,
+          action.payload.name,
+          beforeState,
+          action.payload,
+          `Updated person: ${action.payload.name}`,
+        ),
+      );
     },
     deletePerson: (state, action: PayloadAction<string>) => {
       const existingPerson = findPersonRecursive(state.data, action.payload);
       const beforeState = existingPerson ? { ...existingPerson } : undefined;
-      
+
       state.data = deletePersonRecursive(state.data, action.payload);
-      
+
       if (existingPerson) {
-        state.changelog.push(createChangelogEntry(
-          'DELETE',
-          action.payload,
-          existingPerson.name,
-          beforeState,
-          undefined,
-          `Deleted person: ${existingPerson.name}`
-        ));
+        state.changelog.push(
+          createChangelogEntry(
+            'DELETE',
+            action.payload,
+            existingPerson.name,
+            beforeState,
+            undefined,
+            `Deleted person: ${existingPerson.name}`,
+          ),
+        );
       }
     },
     clearChangelog: (state) => {
@@ -181,7 +191,8 @@ const personSlice = createSlice({
   },
 });
 
-export const { setData, setLoading, addPerson, updatePerson, deletePerson, clearChangelog } = personSlice.actions;
+export const { setData, setLoading, addPerson, updatePerson, deletePerson, clearChangelog } =
+  personSlice.actions;
 
 const store = configureStore({
   reducer: {
@@ -191,4 +202,4 @@ const store = configureStore({
 
 export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
-export default store; 
+export default store;

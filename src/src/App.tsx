@@ -12,7 +12,7 @@ import { useNavigate, useParams, useLocation, Routes, Route, useMatch } from 're
 
 const statusList = [
   { label: 'Active', value: 'active' },
-  { label: 'Inactive', value: 'inactive' }
+  { label: 'Inactive', value: 'inactive' },
 ];
 
 function TableWithModal() {
@@ -36,7 +36,11 @@ function TableWithModal() {
   };
 
   // Helper function to find the path/ancestors of a person
-  const findPersonPath = (persons: Person[], targetId: string, currentPath: Person[] = []): Person[] | null => {
+  const findPersonPath = (
+    persons: Person[],
+    targetId: string,
+    currentPath: Person[] = [],
+  ): Person[] | null => {
     for (const person of persons) {
       const newPath = [...currentPath, person];
       if (person.id === targetId) {
@@ -52,7 +56,7 @@ function TableWithModal() {
 
   // Helper function to get changelog entries for a specific person
   const getPersonChangelog = (personId: string) => {
-    return changelog.filter(entry => entry.personId === personId);
+    return changelog.filter((entry) => entry.personId === personId);
   };
 
   // Sync modal open/close with router
@@ -105,12 +109,10 @@ function TableWithModal() {
           data: statusList,
         },
         filterFn: 'arrIncludesSome',
-        Cell: ({ cell }: { cell: any }) => (
-          <StatusBadge status={cell.getValue()} />
-        ),
+        Cell: ({ cell }: { cell: any }) => <StatusBadge status={cell.getValue()} />,
       },
     ],
-    []
+    [],
   );
 
   const table = useMantineReactTable({
@@ -124,17 +126,21 @@ function TableWithModal() {
     renderRowActions: ({ row }) => (
       <Box sx={{ display: 'flex', flexWrap: 'nowrap', gap: '8px' }}>
         <ActionIcon
-          onClick={() => { table.setEditingRow(row); }}
+          onClick={() => {
+            table.setEditingRow(row);
+          }}
         >
           <IconEdit />
         </ActionIcon>
-        <ActionIcon
-          onClick={() => dispatch(deletePerson(row.original.id))}
-        >
+        <ActionIcon onClick={() => dispatch(deletePerson(row.original.id))}>
           <IconTrash />
         </ActionIcon>
-        <ActionIcon onClick={() => { openPersonModal(row.original.id); }}>
-          <IconFileDatabase/>
+        <ActionIcon
+          onClick={() => {
+            openPersonModal(row.original.id);
+          }}
+        >
+          <IconFileDatabase />
         </ActionIcon>
       </Box>
     ),
@@ -146,22 +152,26 @@ function TableWithModal() {
     getSubRows: (row) => row.children,
     onEditingRowSave: ({ values, row, exitEditingMode }) => {
       // Update the person in Redux store
-      dispatch(updatePerson({
-        id: row.original.id,
-        name: values.name,
-        age: values.age,
-        status: values.status,
-        children: row.original.children,
-      }));
+      dispatch(
+        updatePerson({
+          id: row.original.id,
+          name: values.name,
+          age: values.age,
+          status: values.status,
+          children: row.original.children,
+        }),
+      );
       exitEditingMode();
     },
     onCreatingRowSave: ({ values, exitCreatingMode }) => {
       // Add new person to Redux store
-      dispatch(addPerson({
-        name: values.name,
-        age: values.age,
-        status: values.status,
-      }));
+      dispatch(
+        addPerson({
+          name: values.name,
+          age: values.age,
+          status: values.status,
+        }),
+      );
       exitCreatingMode();
     },
     onEditingRowCancel: () => {
@@ -183,7 +193,7 @@ function TableWithModal() {
         changelog={personChangelog}
         personPath={personPath}
         onBreadcrumbClick={openPersonModal}
-        onSave={updatedPerson => dispatch(updatePerson(updatedPerson))}
+        onSave={(updatedPerson) => dispatch(updatePerson(updatedPerson))}
       />
     </>
   );

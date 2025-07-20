@@ -13,9 +13,8 @@ describe('App component', () => {
         <BrowserRouter>
           <App />
         </BrowserRouter>
-      </Provider>
+      </Provider>,
     );
     expect(screen.getByRole('table')).toBeInTheDocument();
   });
-
 });

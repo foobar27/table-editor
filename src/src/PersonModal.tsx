@@ -1,6 +1,28 @@
 import React, { useState } from 'react';
-import { Modal, Box, Text, Group, ScrollArea, Divider, Badge, Breadcrumbs, Anchor, ActionIcon, TextInput, NumberInput, Button } from '@mantine/core';
-import { IconUser, IconActivity, IconClock, IconChevronRight, IconEdit, IconCheck, IconX } from '@tabler/icons-react';
+import {
+  Modal,
+  Box,
+  Text,
+  Group,
+  ScrollArea,
+  Divider,
+  Badge,
+  Breadcrumbs,
+  Anchor,
+  ActionIcon,
+  TextInput,
+  NumberInput,
+  Button,
+} from '@mantine/core';
+import {
+  IconUser,
+  IconActivity,
+  IconClock,
+  IconChevronRight,
+  IconEdit,
+  IconCheck,
+  IconX,
+} from '@tabler/icons-react';
 import StatusBadge from './StatusBadge';
 import StatusSelect from './StatusSelect';
 import type { Person, ChangeLogEntry } from './types';
@@ -17,10 +39,18 @@ interface PersonModalProps {
 
 const statusList = [
   { label: 'Active', value: 'active' },
-  { label: 'Inactive', value: 'inactive' }
+  { label: 'Inactive', value: 'inactive' },
 ];
 
-const PersonModal: React.FC<PersonModalProps> = ({ opened, onClose, person, changelog, personPath, onBreadcrumbClick, onSave }) => {
+const PersonModal: React.FC<PersonModalProps> = ({
+  opened,
+  onClose,
+  person,
+  changelog,
+  personPath,
+  onBreadcrumbClick,
+  onSave,
+}) => {
   const [editMode, setEditMode] = useState(false);
   const [editValues, setEditValues] = useState<Person | null>(null);
 
@@ -56,12 +86,7 @@ const PersonModal: React.FC<PersonModalProps> = ({ opened, onClose, person, chan
         <Group position="apart" w="100%">
           <Text>Person Details & Changelog</Text>
           {person && !editMode && (
-            <ActionIcon
-              onClick={handleEditClick}
-              variant="subtle"
-              color="blue"
-              size="sm"
-            >
+            <ActionIcon onClick={handleEditClick} variant="subtle" color="blue" size="sm">
               <IconEdit size={16} />
             </ActionIcon>
           )}
@@ -80,8 +105,15 @@ const PersonModal: React.FC<PersonModalProps> = ({ opened, onClose, person, chan
                     key={ancestor.id}
                     size="sm"
                     color={index === personPath.length - 1 ? 'blue' : 'dimmed'}
-                    style={{ fontWeight: index === personPath.length - 1 ? 'bold' : 'normal', cursor: index === personPath.length - 1 ? 'default' : 'pointer' }}
-                    onClick={index === personPath.length - 1 ? undefined : () => onBreadcrumbClick && onBreadcrumbClick(ancestor.id)}
+                    style={{
+                      fontWeight: index === personPath.length - 1 ? 'bold' : 'normal',
+                      cursor: index === personPath.length - 1 ? 'default' : 'pointer',
+                    }}
+                    onClick={
+                      index === personPath.length - 1
+                        ? undefined
+                        : () => onBreadcrumbClick && onBreadcrumbClick(ancestor.id)
+                    }
                     underline={index === personPath.length - 1 ? false : true}
                   >
                     {ancestor.name}
@@ -102,38 +134,49 @@ const PersonModal: React.FC<PersonModalProps> = ({ opened, onClose, person, chan
                 <TextInput
                   label="Name"
                   value={editValues.name}
-                  onChange={e => setEditValues({ ...editValues, name: e.currentTarget.value })}
+                  onChange={(e) => setEditValues({ ...editValues, name: e.currentTarget.value })}
                   required
                 />
                 <NumberInput
                   label="Age"
                   value={editValues.age}
-                  onChange={value => setEditValues({ ...editValues, age: value || 0 })}
+                  onChange={(value) => setEditValues({ ...editValues, age: value || 0 })}
                   required
                   min={0}
                 />
                 <StatusSelect
                   value={editValues.status}
-                  onChange={value => setEditValues({ ...editValues, status: value })}
+                  onChange={(value) => setEditValues({ ...editValues, status: value })}
                   required
                 />
               </Group>
             ) : (
               <Group>
-                <Text><strong>Name:</strong> {person.name}</Text>
-                <Text><strong>Age:</strong> {person.age}</Text>
+                <Text>
+                  <strong>Name:</strong> {person.name}
+                </Text>
+                <Text>
+                  <strong>Age:</strong> {person.age}
+                </Text>
                 <StatusBadge status={person.status} />
               </Group>
             )}
             {person.children && person.children.length > 0 && (
-              <Text mt="sm"><strong>Children:</strong> {person.children.length}</Text>
+              <Text mt="sm">
+                <strong>Children:</strong> {person.children.length}
+              </Text>
             )}
             {editMode && (
               <Group mt="md">
                 <Button leftIcon={<IconCheck size={16} />} color="green" onClick={handleSave}>
                   Save
                 </Button>
-                <Button leftIcon={<IconX size={16} />} variant="outline" color="gray" onClick={handleCancel}>
+                <Button
+                  leftIcon={<IconX size={16} />}
+                  variant="outline"
+                  color="gray"
+                  onClick={handleCancel}
+                >
                   Cancel
                 </Button>
               </Group>
@@ -151,7 +194,12 @@ const PersonModal: React.FC<PersonModalProps> = ({ opened, onClose, person, chan
             <ScrollArea h={300}>
               {changelog.length > 0 ? (
                 changelog.map((entry) => (
-                  <Box key={entry.id} mb="sm" p="sm" sx={{ border: '1px solid #e0e0e0', borderRadius: 4 }}>
+                  <Box
+                    key={entry.id}
+                    mb="sm"
+                    p="sm"
+                    sx={{ border: '1px solid #e0e0e0', borderRadius: 4 }}
+                  >
                     <Group position="apart" mb="xs">
                       {entry.action === 'CREATE' || entry.action === 'DELETE' ? (
                         <StatusBadge status={entry.action === 'CREATE' ? 'active' : 'inactive'} />
@@ -177,7 +225,9 @@ const PersonModal: React.FC<PersonModalProps> = ({ opened, onClose, person, chan
                   </Box>
                 ))
               ) : (
-                <Text color="dimmed" align="center">No changes recorded for this person.</Text>
+                <Text color="dimmed" align="center">
+                  No changes recorded for this person.
+                </Text>
               )}
             </ScrollArea>
           </Box>
@@ -187,4 +237,4 @@ const PersonModal: React.FC<PersonModalProps> = ({ opened, onClose, person, chan
   );
 };
 
-export default PersonModal; 
+export default PersonModal;
