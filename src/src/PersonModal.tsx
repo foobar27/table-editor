@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Modal, Box, Text, Group, ScrollArea, Divider, Badge, Breadcrumbs, Anchor, ActionIcon, TextInput, NumberInput, Select, Button } from '@mantine/core';
+import { Modal, Box, Text, Group, ScrollArea, Divider, Badge, Breadcrumbs, Anchor, ActionIcon, TextInput, NumberInput, Button } from '@mantine/core';
 import { IconUser, IconActivity, IconClock, IconChevronRight, IconEdit, IconCheck, IconX } from '@tabler/icons-react';
 import StatusBadge from './StatusBadge';
+import StatusSelect from './StatusSelect';
 import type { Person, ChangeLogEntry } from './types';
 
 interface PersonModalProps {
@@ -111,11 +112,9 @@ const PersonModal: React.FC<PersonModalProps> = ({ opened, onClose, person, chan
                   required
                   min={0}
                 />
-                <Select
-                  label="Status"
-                  data={statusList}
+                <StatusSelect
                   value={editValues.status}
-                  onChange={value => setEditValues({ ...editValues, status: value as Person['status'] })}
+                  onChange={value => setEditValues({ ...editValues, status: value })}
                   required
                 />
               </Group>
